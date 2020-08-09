@@ -1,0 +1,7 @@
+<h1><%= bear.name %> Bear</h1>
+
+<p>Hi, my name is <%= bear.name %> and I'm a <%= bear.type %> bear.</p>
+
+<%= if bear.hibernating do %>
+<p>I'm currently hibernating!</p>
+<% end %>

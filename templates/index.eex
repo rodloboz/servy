@@ -1,0 +1,7 @@
+<h1>Bears</h1>
+
+<ul>
+  <%= for bear <- bears do %>
+    <li><%= bear.name %> is a <%= bear.type %> bear</li>
+  <% end %>
+</ul>

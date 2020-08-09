@@ -7,31 +7,20 @@ defmodule Servy.BearController do
   @pages_path Path.expand("../../pages", __DIR__)
 
   import Servy.FileHandler, only: [handle_file: 2]
-
-  defp bear_item(bear) do
-    "<li>#{bear.name}</li>"
-  end
+  import Servy.View, only: [render: 3]
 
   def index(%Conn{} = conn) do
-    items =
+    bears =
       Wildthings.list_bears()
-      |> Enum.filter(&Bear.is_grizzly/1)
       |> Enum.sort(&Bear.order_ascending_by_name/2)
-      |> Enum.map(&bear_item/1)
-      |> Enum.join
-    bears_html = """
-    <ul>
-      #{items}
-    </ul>
-    """
-    body = "<h1 class=\"large\">Bears</h1>" <> bears_html
-    %{ conn | status: 200, resp_body: body }
+
+    render(conn, "index.eex", bears: bears)
   end
 
   def show(%Conn{} = conn, %{"id" => id}) do
     bear = Wildthings.get_bear(id)
-    body = "<h1 class=\"large\">#{bear.name}</h1>"
-    %{ conn | status: 200, resp_body: body  }
+
+    render(conn, "show.eex", bear: bear)
   end
 
   def new(%Conn{} = conn) do
