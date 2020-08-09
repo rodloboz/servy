@@ -14,9 +14,15 @@ defmodule Servy.Parser do
       # |> List.first
       # |> String.split
 
+    headers = parse_headers(header_lines, %{})
     params = parse_params(params_string)
 
-    %Conn{ method: method, path: path, params: params }
+    %Conn{
+      method: method,
+      path: path,
+      params: params,
+      headers: headers
+    }
   end
 
   def parse_params(params_string) do
@@ -24,4 +30,12 @@ defmodule Servy.Parser do
     |> String.trim
     |> URI.decode_query
   end
+
+  def parse_headers([head | tail], headers) do
+    [key, value] = String.split(head, ": ")
+    headers = Map.put(headers, key, value)
+    parse_headers(tail, headers)
+  end
+
+  def parse_headers([], headers), do: headers
 end

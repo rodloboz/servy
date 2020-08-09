@@ -5,6 +5,7 @@ defmodule Servy.Conn do
     method: "",
     path: "",
     params: %{},
+    headers: %{},
     resp_body: "",
     status: nil
 ]

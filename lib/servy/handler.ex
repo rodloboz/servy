@@ -32,17 +32,19 @@ defmodule Servy.Handler do
   # end
 
   def route(%Conn{ method: "GET", path: "/wildthings" } = conn) do
-    %{ conn | status: 200, resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
+    body = "<h1 class=\"large\">Lions, Bears, and Tigers</h1>"
+    %{ conn | status: 200, resp_body: body }
   end
 
   def route(%Conn{ method: "GET", path: "/bears" } = conn) do
-    %{ conn | status: 200, resp_body: "<h1 class=\"large\">Bears</h1>" }
+    body = "<h1 class=\"large\">Bears</h1>"
+    %{ conn | status: 200, resp_body: body }
   end
 
   # name=Babaloo&type=Brown
   def route(%Conn{ method: "POST", path: "/bears" } = conn) do
-    # params = %{ "name" => "Babaloo", "type" => "Brown" }
-    %{ conn | status: 201, resp_body: "Created #{conn.params["name"]} #{conn.params["type"]} bear!" }
+    body = "Created #{conn.params["name"]} #{conn.params["type"]} bear!"
+    %{ conn | status: 201, resp_body: body  }
   end
 
   def route(%Conn{ method: "GET", path: "/bears/new" } = conn) do
@@ -53,11 +55,13 @@ defmodule Servy.Handler do
   end
 
   def route(%Conn{ method: "GET", path: "/bears/" <> id } = conn) do
-    %{ conn | status: 200, resp_body: "<h1 class=\"large\">Bear #{id}</h1>" }
+    body = "<h1 class=\"large\">Bear #{id}</h1>"
+    %{ conn | status: 200, resp_body: body  }
   end
 
   def route(%Conn{ method: "DELETE", path: "/bears/" <> id } = conn) do
-    %{ conn | status: 403, resp_body: "Cannot delete Bear #{id}" }
+    body = "Cannot delete Bear #{id}"
+    %{ conn | status: 403, resp_body: body }
   end
 
   def route(%Conn{ method: "GET", path: "/" } = conn) do
@@ -86,7 +90,8 @@ defmodule Servy.Handler do
 
   # Catch all route
   def route(%Conn{ method: method, path: path } = conn) do
-    %{ conn | status: 404, resp_body: "404 - Cound not find #{method} request for #{path}" }
+    body = "404 - Cound not find #{method} request for #{path}"
+    %{ conn | status: 404, resp_body: body }
   end
 
   def format_response(%Conn{} = conn) do
