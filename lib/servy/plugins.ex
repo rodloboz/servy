@@ -1,9 +1,9 @@
 defmodule Servy.Plugins do
   @moduledoc false
 
-  require Logger
-
   alias Servy.Conn
+
+  require Logger
 
   @doc "Logs 404 requests"
   def track(%Conn{status: 404, path: path} = conn) do
@@ -11,7 +11,7 @@ defmodule Servy.Plugins do
     conn
   end
 
-  def track(conn), do: conn
+  def track(%Conn{} = conn), do: conn
 
   def rewrite_path(%Conn{ path: "/wildlife"} = conn) do
     %{ conn | path: "/wildthings" }
@@ -28,12 +28,12 @@ defmodule Servy.Plugins do
   end
 
   def rewrite_path_captures(conn, %{"thing" => thing, "id" => id}) do
-    %Conn{ conn | path: "/#{thing}/#{id}" }
+    %{ conn | path: "/#{thing}/#{id}" }
   end
 
-  def rewrite_path_captures(conn, nil), do: conn
+  def rewrite_path_captures(%Conn{} = conn, nil), do: conn
 
-  def rewrite_path(conn), do: conn
+  def rewrite_path(%Conn{} = conn), do: conn
 
-  def log(conn), do: IO.inspect conn
+  def log(%Conn{} = conn), do: IO.inspect conn
 end

@@ -2,9 +2,9 @@ defmodule Servy.Handler do
 
   @moduledoc "Handles HTTP Requests."
 
-  @pages_path Path.expand("../../pages", __DIR__)
-
   alias Servy.Conn
+
+  @pages_path Path.expand("../../pages", __DIR__)
 
   import Servy.FileHandler, only: [handle_file: 2]
   import Servy.Parser, only: [parse: 1]
@@ -83,7 +83,7 @@ defmodule Servy.Handler do
     %{ conn | status: 404, resp_body: "404 - Cound not find #{method} request for #{path}" }
   end
 
-  def format_response(conn) do
+  def format_response(%Conn{} = conn) do
     """
     HTTP/1.1 #{conn.status} #{status_reason(conn.status)}
     Content-Type: text/html
