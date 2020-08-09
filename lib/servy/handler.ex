@@ -1,8 +1,20 @@
 defmodule Servy.Handler do
-  @moduledoc false
 
-  require Logger
+  @moduledoc "Handles HTTP Requests."
 
+  @pages_path Path.expand("../../pages", __DIR__)
+
+  alias Servy.Conn
+
+  import Servy.FileHandler, only: [handle_file: 2]
+  import Servy.Parser, only: [parse: 1]
+  import Servy.Plugins, only: [
+    rewrite_path: 1,
+    log: 1,
+    track: 1
+  ]
+
+  @doc "Transforms the request into a response"
   def handle(request) do
     request
     |> parse
@@ -13,91 +25,40 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def track(%{status: 404, path: path} = conv) do
-    Logger.error "Cannot find #{path}!"
-    conv
-  end
-
-  def track(conv), do: conv
-
-  def rewrite_path(%{ path: "/wildlife"} = conv) do
-    %{ conv | path: "/wildthings" }
-  end
-
-  # def rewrite_path(%{ path: "/bears?id=" <> id} = conv) do
-  #   %{ conv | path: "/bears/#{id}" }
-  # end
-
-  def rewrite_path(%{path: path} = conv) do
-    regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
-    captures = Regex.named_captures(regex, path)
-    rewrite_path_captures(conv, captures)
-  end
-
-  def rewrite_path_captures(conv, %{"thing" => thing, "id" => id}) do
-    %{ conv | path: "/#{thing}/#{id}" }
-  end
-
-  def rewrite_path_captures(conv, nil), do: conv
-
-  def rewrite_path(conv), do: conv
-
-  def log(conv), do: IO.inspect conv
-
-  def parse(request) do
-    [method, path, _version] =
-      request
-      |> String.split("\n")
-      |> List.first
-      |> String.split
-
-    %{
-      method: method,
-      path: path,
-      status: nil,
-      resp_body: ""
-    }
-  end
-
   # def route(conv) do
   #   # Map.put(conv, :resp:body, "Bears, Lions, Tigers")
   #   # %{ conv | resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
   #   route conv, conv.method, conv.path
   # end
 
-  def route(%{ method: "GET", path: "/wildthings" } = conv) do
-    %{ conv | status: 200, resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
+  def route(%Conn{ method: "GET", path: "/wildthings" } = conn) do
+    %{ conn | status: 200, resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
   end
 
-  def route(%{ method: "GET", path: "/bears" } = conv) do
-    %{ conv | status: 200, resp_body: "<h1 class=\"large\">Bears</h1>" }
+  def route(%Conn{ method: "GET", path: "/bears" } = conn) do
+    %{ conn | status: 200, resp_body: "<h1 class=\"large\">Bears</h1>" }
   end
 
-  def route(%{ method: "GET", path: "/bears/" <> id } = conv) do
-    %{ conv | status: 200, resp_body: "<h1 class=\"large\">Bear #{id}</h1>" }
+  def route(%Conn{ method: "GET", path: "/bears/new" } = conn) do
+    @pages_path
+    |> Path.join("form.html")
+    |> File.read
+    |> handle_file(conn)
   end
 
-  def route(%{ method: "DELETE", path: "/bears/" <> id } = conv) do
-    %{ conv | status: 403, resp_body: "Cannot delete Bear #{id}" }
+  def route(%Conn{ method: "GET", path: "/bears/" <> id } = conn) do
+    %{ conn | status: 200, resp_body: "<h1 class=\"large\">Bear #{id}</h1>" }
   end
 
-  def route(%{ method: "GET", path: "/" } = conv) do
-    Path.expand("../../pages", __DIR__)
+  def route(%Conn{ method: "DELETE", path: "/bears/" <> id } = conn) do
+    %{ conn | status: 403, resp_body: "Cannot delete Bear #{id}" }
+  end
+
+  def route(%Conn{ method: "GET", path: "/" } = conn) do
+    @pages_path
     |> Path.join("about.html")
     |> File.read
-    |> handle_file(conv)
-  end
-
-  def handle_file({:ok, content}, conv) do
-    %{ conv | status: 200, resp_body: content }
-  end
-
-  def handle_file({:ok, :enoent}, conv) do
-    %{ conv | status: 404, resp_body: "File not found" }
-  end
-
-  def handle_file({:ok, reason}, conv) do
-    %{ conv | status: 500, resp_body: "File error: #{reason}" }
+    |> handle_file(conn)
   end
 
   # def route(%{ method: "GET", path: "/" } = conv) do
@@ -118,17 +79,17 @@ defmodule Servy.Handler do
   # end
 
   # Catch all route
-  def route(%{ method: method, path: path } = conv) do
-    %{ conv | status: 404, resp_body: "404 - Cound not find #{method} request for #{path}" }
+  def route(%Conn{ method: method, path: path } = conn) do
+    %{ conn | status: 404, resp_body: "404 - Cound not find #{method} request for #{path}" }
   end
 
-  def format_response(conv) do
+  def format_response(conn) do
     """
-    HTTP/1.1 #{conv.status} #{status_reason(conv.status)}
+    HTTP/1.1 #{conn.status} #{status_reason(conn.status)}
     Content-Type: text/html
-    Content-Length: #{byte_size(conv.resp_body)}
+    Content-Length: #{byte_size(conn.resp_body)}
 
-    #{conv.resp_body}
+    #{conn.resp_body}
     """
   end
 
@@ -227,6 +188,16 @@ IO.puts(response)
 
 request = """
 GET / HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+response = Servy.Handler.handle(request)
+IO.puts(response)
+
+request = """
+GET /bears/new HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
