@@ -7,7 +7,9 @@ defmodule Servy.Plugins do
 
   @doc "Logs 404 requests"
   def track(%Conn{status: 404, path: path} = conn) do
-    Logger.error "Cannot find #{path}!"
+    if Mix.env !=:test do
+      Logger.error "Cannot find #{path}!"
+    end
     conn
   end
 
@@ -35,5 +37,10 @@ defmodule Servy.Plugins do
 
   def rewrite_path_captures(%Conn{} = conn, nil), do: conn
 
-  def log(%Conn{} = conn), do: IO.inspect conn
+  def log(%Conn{} = conn) do
+    if Mix.env== :dev do
+      IO.inspect conn
+    end
+    conn
+  end
 end

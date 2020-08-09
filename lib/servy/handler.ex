@@ -4,6 +4,7 @@ defmodule Servy.Handler do
 
   alias Servy.Conn
   alias Servy.BearController
+  alias Servy.Api
 
   @pages_path Path.expand("../../pages", __DIR__)
 
@@ -41,6 +42,10 @@ defmodule Servy.Handler do
     BearController.index(conn)
     # body = "<h1 class=\"large\">Bears</h1>"
     # %{ conn | status: 200, resp_body: body }
+  end
+
+  def route(%Conn{ method: "GET", path: "/api/bears" } = conn) do
+    Api.BearController.index(conn)
   end
 
   def route(%Conn{ method: "POST", path: "/bears" } = conn) do
@@ -94,7 +99,7 @@ defmodule Servy.Handler do
   def format_response(%Conn{} = conn) do
     """
     HTTP/1.1 #{Conn.full_status(conn)}\r
-    Content-Type: text/html\r
+    Content-Type: #{conn.content_type}\r
     Content-Length: #{byte_size(conn.resp_body)}\r
     \r
     #{conn.resp_body}
