@@ -18,26 +18,30 @@ defmodule Servy.Handler do
       |> List.first
       |> String.split
 
-    %{ method: method, path: path, resp_body: "" }
+    %{ method: method, path: path, status: nil, resp_body: "" }
   end
 
   def route(conv) do
     # Map.put(conv, :resp:body, "Bears, Lions, Tigers")
     # %{ conv | resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
-    route(conv, conv.path)
+    route(conv, conv.method, conv.path)
   end
 
-  def route(conv, "/wildthings") do
-    %{ conv | resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
+  def route(conv, "GET", "/wildthings") do
+    %{ conv | status: 200, resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
   end
 
-  def route(conv, "/bears") do
-    %{ conv | resp_body: "<h1 class=\"large\">Bears</h1>" }
+  def route(conv, "GET", "/bears") do
+    %{ conv | status: 200, resp_body: "<h1 class=\"large\">Bears</h1>" }
+  end
+
+  def route(conv, "GET", _) do
+    %{ conv | status: 404, resp_body: "404 - Not found" }
   end
 
   def format_response(conv) do
     """
-    HTTP/1.1 200 OK
+    HTTP/1.1 #{conv.status} OK
     Content-Type: text/html
     Content-Length: #{byte_size(conv.resp_body)}
 
@@ -79,6 +83,16 @@ IO.puts(response)
 
 request = """
 GET /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+response = Servy.Handler.handle(request)
+IO.puts(response)
+
+request = """
+GET /bigfoot HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
