@@ -93,10 +93,10 @@ defmodule Servy.Handler do
 
   def format_response(%Conn{} = conn) do
     """
-    HTTP/1.1 #{Conn.full_status(conn)}
-    Content-Type: text/html
-    Content-Length: #{byte_size(conn.resp_body)}
-
+    HTTP/1.1 #{Conn.full_status(conn)}\r
+    Content-Type: text/html\r
+    Content-Length: #{byte_size(conn.resp_body)}\r
+    \r
     #{conn.resp_body}
     """
   end
@@ -109,109 +109,109 @@ end
 # UserAgent line
 # Accept line
 # Blank line (separates headers from body)
-request = """
-GET /wildthings HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET /wildthings HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
+# """
 
 # HTTP Response
 # Status Line: HTTP Protocol, Status Code, Reason Phrase
 # Response Headers: Media Type and Size of the Body
 # Blank line (sep headers from body)
 # Body
-expected_response = """
-HTTP/1.1 200 OK
-Content-Type: text/html
-Content-Length: 47
+# expected_response = """
+# HTTP/1.1 200 OK
+# Content-Type: text/html
+# Content-Length: 47
 
-<h1 class="large">Lions, Bears, and Tigers</h1>
-"""
+# <h1 class="large">Lions, Bears, and Tigers</h1>
+# """
 
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-GET /bears HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET /bears HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-GET /bigfoot HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET /bigfoot HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-GET /bears/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET /bears/1 HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-GET /wildlife HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET /wildlife HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-DELETE /bears/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# DELETE /bears/1 HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-GET / HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET / HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-GET /bears/new HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET /bears/new HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
 
-request = """
-POST /bears HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 21
+# request = """
+# POST /bears HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+# Content-Type: application/x-www-form-urlencoded
+# Content-Length: 21
 
-name=Babaloo&type=Brown
-"""
-response = Servy.Handler.handle(request)
-IO.puts(response)
+# name=Babaloo&type=Brown
+# """
+# response = Servy.Handler.handle(request)
+# IO.puts(response)

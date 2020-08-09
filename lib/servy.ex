@@ -4,12 +4,12 @@ defmodule Servy do
   """
 
   @doc """
-  Hello world.
+  Howdy, partner!.
 
   ## Examples
 
-      iex> Servy.hello()
-      :world
+      iex> Servy.hello("partner")
+      "Howdy, partner!"
 
   """
   def hello(name) do
