@@ -44,7 +44,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conn{ method: "POST", path: "/bears" } = conn) do
-    BearController.create(conn)
+    BearController.create(conn, conn.params)
   end
 
   def route(%Conn{ method: "GET", path: "/bears/new" } = conn) do
@@ -52,11 +52,13 @@ defmodule Servy.Handler do
   end
 
   def route(%Conn{ method: "GET", path: "/bears/" <> id } = conn) do
-    BearController.show(conn, id)
+    params = Map.put(conn.params, "id", id )
+    BearController.show(conn, params)
   end
 
   def route(%Conn{ method: "DELETE", path: "/bears/" <> id } = conn) do
-    BearController.destroy(conn, id)
+    params = Map.put(conn.params, "id", id )
+    BearController.destroy(conn, params)
   end
 
   def route(%Conn{ method: "GET", path: "/" } = conn) do
