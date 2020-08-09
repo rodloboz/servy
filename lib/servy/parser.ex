@@ -14,7 +14,7 @@ defmodule Servy.Parser do
       # |> List.first
       # |> String.split
 
-    headers = parse_headers(header_lines, %{})
+    headers = parse_headers(header_lines)
     params = parse_params(headers["Content-Type"], params_string)
 
     %Conn{
@@ -33,11 +33,18 @@ defmodule Servy.Parser do
 
   def parse_params(_, _), do: %{}
 
-  def parse_headers([head | tail], headers) do
-    [key, value] = String.split(head, ": ")
-    headers = Map.put(headers, key, value)
-    parse_headers(tail, headers)
-  end
+  # def parse_headers([head | tail], headers) do
+  #   [key, value] = String.split(head, ": ")
+  #   headers = Map.put(headers, key, value)
+  #   parse_headers(tail, headers)
+  # end
 
-  def parse_headers([], headers), do: headers
+  # def parse_headers([], headers), do: headers
+
+  def parse_headers(header_lines) do
+    Enum.reduce(header_lines, %{}, fn(line, headers) ->
+      [key, value] = String.split(line, ": ")
+      Map.put(headers, key, value)
+    end)
+  end
 end
