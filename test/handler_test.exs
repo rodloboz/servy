@@ -34,12 +34,29 @@ defmodule HandlerTest do
 
     response = handle(request)
 
-    assert response == """
+    expected_response = """
     HTTP/1.1 200 OK\r
     Content-Type: text/html\r
     Content-Length: 345\r
     \r
-    <h1>Bears</h1>\n\n<ul>\n  \n    <li>Brutus is a Grizzly bear</li>\n  \n    <li>Ming is a Panda bear</li>\n  \n    <li>Paddington is a Brown bear</li>\n  \n    <li>Rosie is a Black bear</li>\n  \n    <li>Scarface is a Grizzly bear</li>\n  \n    <li>Smokey is a Black bear</li>\n  \n    <li>Snow is a Polar bear</li>\n  \n    <li>Teddy is a Brown bear</li>\n  \n</ul>
+    <h1>Bears</h1>
+
+    <ul>
+      <li>Brutus is a Grizzly bear</li>
+      <li>Ming is a Panda bear</li>
+      <li>Paddington is a Brown bear</li>
+      <li>Rosie is a Black bear</li>
+      <li>Scarface is a Grizzly bear</li>
+      <li>Smokey is a Black bear</li>
+      <li>Snow is a Polar bear</li>
+      <li>Teddy is a Brown bear</li>
+    </ul>
     """
+
+    assert remove_whitespace(response) == remove_whitespace(expected_response)
+  end
+
+  defp remove_whitespace(text) do
+    String.replace(text, ~r{\s}, "")
   end
 end
