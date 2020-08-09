@@ -4,12 +4,24 @@ defmodule Servy.Parser do
   alias Servy.Conn
 
   def parse(request) do
-    [method, path, _version] =
-      request
-      |> String.split("\n")
-      |> List.first
-      |> String.split
+    [top, params_string] = String.split(request, "\n\n")
 
-    %Conn{ method: method, path: path }
+    [request_line | header_lines] = String.split(top, "\n")
+
+    [method, path, _version] = String.split(request_line)
+      # top
+      # |> String.split("\n")
+      # |> List.first
+      # |> String.split
+
+    params = parse_params(params_string)
+
+    %Conn{ method: method, path: path, params: params }
+  end
+
+  def parse_params(params_string) do
+    params_string
+    |> String.trim
+    |> URI.decode_query
   end
 end

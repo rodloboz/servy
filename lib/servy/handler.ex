@@ -39,6 +39,12 @@ defmodule Servy.Handler do
     %{ conn | status: 200, resp_body: "<h1 class=\"large\">Bears</h1>" }
   end
 
+  # name=Babaloo&type=Brown
+  def route(%Conn{ method: "POST", path: "/bears" } = conn) do
+    # params = %{ "name" => "Babaloo", "type" => "Brown" }
+    %{ conn | status: 201, resp_body: "Created #{conn.params["name"]} #{conn.params["type"]} bear!" }
+  end
+
   def route(%Conn{ method: "GET", path: "/bears/new" } = conn) do
     @pages_path
     |> Path.join("form.html")
@@ -85,23 +91,12 @@ defmodule Servy.Handler do
 
   def format_response(%Conn{} = conn) do
     """
-    HTTP/1.1 #{conn.status} #{status_reason(conn.status)}
+    HTTP/1.1 #{Conn.full_status(conn)}
     Content-Type: text/html
     Content-Length: #{byte_size(conn.resp_body)}
 
     #{conn.resp_body}
     """
-  end
-
-  defp status_reason(code) do
-    %{
-      200 => "OK",
-      201 => "Created",
-      401 => "Unauthorized",
-      403 => "Forbidden",
-      404 => "Not found",
-      500 => "Internal Server Error"
-    }[code]
   end
 end
 
@@ -202,6 +197,19 @@ Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
 
+"""
+response = Servy.Handler.handle(request)
+IO.puts(response)
+
+request = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Babaloo&type=Brown
 """
 response = Servy.Handler.handle(request)
 IO.puts(response)

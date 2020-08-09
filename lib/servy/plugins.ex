@@ -13,13 +13,13 @@ defmodule Servy.Plugins do
 
   def track(%Conn{} = conn), do: conn
 
-  def rewrite_path(%Conn{ path: "/wildlife"} = conn) do
-    %{ conn | path: "/wildthings" }
-  end
-
   # def rewrite_path(%{ path: "/bears?id=" <> id} = conv) do
   #   %{ conv | path: "/bears/#{id}" }
   # end
+
+  def rewrite_path(%Conn{ path: "/wildlife"} = conn) do
+    %{ conn | path: "/wildthings" }
+  end
 
   def rewrite_path(%Conn{path: path} = conn) do
     regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
@@ -27,13 +27,13 @@ defmodule Servy.Plugins do
     rewrite_path_captures(conn, captures)
   end
 
+  def rewrite_path(%Conn{} = conn), do: conn
+
   def rewrite_path_captures(conn, %{"thing" => thing, "id" => id}) do
     %{ conn | path: "/#{thing}/#{id}" }
   end
 
   def rewrite_path_captures(%Conn{} = conn, nil), do: conn
-
-  def rewrite_path(%Conn{} = conn), do: conn
 
   def log(%Conn{} = conn), do: IO.inspect conn
 end
