@@ -3,6 +3,7 @@ defmodule Servy.Handler do
   @moduledoc "Handles HTTP Requests."
 
   alias Servy.Conn
+  alias Servy.BearController
 
   @pages_path Path.expand("../../pages", __DIR__)
 
@@ -37,31 +38,25 @@ defmodule Servy.Handler do
   end
 
   def route(%Conn{ method: "GET", path: "/bears" } = conn) do
-    body = "<h1 class=\"large\">Bears</h1>"
-    %{ conn | status: 200, resp_body: body }
+    BearController.index(conn)
+    # body = "<h1 class=\"large\">Bears</h1>"
+    # %{ conn | status: 200, resp_body: body }
   end
 
-  # name=Babaloo&type=Brown
   def route(%Conn{ method: "POST", path: "/bears" } = conn) do
-    body = "Created #{conn.params["name"]} #{conn.params["type"]} bear!"
-    %{ conn | status: 201, resp_body: body  }
+    BearController.create(conn)
   end
 
   def route(%Conn{ method: "GET", path: "/bears/new" } = conn) do
-    @pages_path
-    |> Path.join("form.html")
-    |> File.read
-    |> handle_file(conn)
+    BearController.new(conn)
   end
 
   def route(%Conn{ method: "GET", path: "/bears/" <> id } = conn) do
-    body = "<h1 class=\"large\">Bear #{id}</h1>"
-    %{ conn | status: 200, resp_body: body  }
+    BearController.show(conn, id)
   end
 
   def route(%Conn{ method: "DELETE", path: "/bears/" <> id } = conn) do
-    body = "Cannot delete Bear #{id}"
-    %{ conn | status: 403, resp_body: body }
+    BearController.destroy(conn, id)
   end
 
   def route(%Conn{ method: "GET", path: "/" } = conn) do
