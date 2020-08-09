@@ -4,7 +4,9 @@ defmodule Servy.Parser do
   alias Servy.Conn
 
   def parse(request) do
-    [top, params_string] = String.split(request, "\r\n\r\n")
+    request_parts = String.split(request, "\r\n\r\n")
+    top = Enum.at request_parts, 0
+    params_string = Enum.at request_parts, 1
 
     [request_line | header_lines] = String.split(top, "\r\n")
 

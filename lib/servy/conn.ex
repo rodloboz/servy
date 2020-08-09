@@ -6,9 +6,9 @@ defmodule Servy.Conn do
     path: "",
     params: %{},
     headers: %{},
+    resp_content_type: "text/html",
     resp_body: "",
-    status: nil,
-    content_type: "text/html"
+    status: nil
 ]
 
   def full_status(conn) do

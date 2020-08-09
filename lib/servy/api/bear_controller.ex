@@ -11,7 +11,7 @@ defmodule Servy.Api.BearController do
 
     %{ conn |
         status: 200,
-        content_type: "application/json",
+        resp_content_type: "application/json",
         resp_body: json
     }
   end
