@@ -4,6 +4,7 @@ defmodule Servy.Handler do
 
   alias Servy.Conn
   alias Servy.BearController
+  alias Servy.PledgeController
   alias Servy.Api
 
   @pages_path Path.expand("../../pages", __DIR__)
@@ -32,6 +33,20 @@ defmodule Servy.Handler do
   #   # %{ conv | resp_body: "<h1 class=\"large\">Lions, Bears, and Tigers</h1>" }
   #   route conv, conv.method, conv.path
   # end
+
+  def route(%Conn{ method: "GET", path: "/pledges"} = conn) do
+    PledgeController.index(conn)
+  end
+
+  def route(%Conn{ method: "POST", path: "/pledges"} = conn) do
+    PledgeController.create(conn, conn.params)
+  end
+
+  def route(%Conn{ method: "GET", path: "/hibernate" <> time } = conn) do
+    time |> String.to_integer |> :timer.sleep
+
+    %{ conn | status: 200, resp_body: "Awake!" }
+  end
 
   def route(%Conn{ method: "GET", path: "/wildthings" } = conn) do
     body = "<h1 class=\"large\">Lions, Bears, and Tigers</h1>"
