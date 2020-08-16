@@ -9,8 +9,9 @@ defmodule Servy.PledgeServer do
   end
 
   # Client Interface
-  def start do
-    GenServer.start(__MODULE__, %State{}, name: @name)
+  def start_link(_arg) do
+    IO.puts "Starting the Pledge Server... 💰"
+    GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
   def create_pledge(name, amount) do
@@ -34,6 +35,12 @@ defmodule Servy.PledgeServer do
   end
 
   # Server Callbacks
+  def init(%State{} = state) do
+    pledges = fetch_recent_pledges_from_server()
+    new_state = %{ state | pledges: pledges}
+    {:ok, new_state}
+  end
+
   def handle_cast(:clear_cache, %State{} = state) do
     {:noreply, %{ state | pledges: []}}
   end
@@ -58,9 +65,9 @@ defmodule Servy.PledgeServer do
     {:reply, id, %{state | pledges: cached_pledges}}
   end
 
-  def init(%State{} = state) do
-    new_state = %{ state | pledges: fetch_recent_pledges_from_server()}
-    {:ok, new_state}
+  def handle_info(_message, state) do
+    IO.puts "Can't touch this!"
+    {:noreply, state}
   end
 
   defp fetch_recent_pledges_from_server do
